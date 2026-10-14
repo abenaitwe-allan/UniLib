@@ -57,4 +57,23 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:35.0.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    // ViewModel + LiveData (MVVM)
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.8.7")
+
+// Room (offline cache). Java uses annotationProcessor, not KSP
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+
+// UI
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+// HTTP calls to Supabase Storage
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+// Tests
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
