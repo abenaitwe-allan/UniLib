@@ -1,3 +1,184 @@
 <resources>
     <string name="app_name">UniLib</string>
+    <string name="tagline">Your class library, approved by your lecturers</string>
+
+    <!-- Login -->
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="show_password">Show password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="btn_login">Log in</string>
+    <string name="no_account">No account?</string>
+    <string name="register_link">Register</string>
+    <string name="cd_logo">UniLib logo, an open book</string>
+    <string name="welcome_back">Welcome back, %1$s!</string>
+    <string name="reset_sent">Password reset link sent to %1$s</string>
+    <string name="reset_need_email">Enter a valid email above first</string>
+
+    <!-- Register -->
+    <string name="register_title">Create account</string>
+    <string name="hint_name">Full name</string>
+    <string name="hint_confirm">Confirm password</string>
+    <string name="label_course">Course unit</string>
+    <string name="label_program">Programme</string>
+    <string name="select_program">Select your program</string>
+    <string name="select_course_unit">Select course unit</string>
+    <string name="all_programs">All programs</string>
+    <string name="all_course_units">All course units</string>
+    <string name="agree_text">I will only share study materials I am allowed to share</string>
+    <string name="btn_register">Register</string>
+    <string name="have_account">Already registered?</string>
+    <string name="login_link">Log in</string>
+    <string name="welcome_new">Account created. Welcome, %1$s!</string>
+
+    <!-- Home -->
+    <string name="welcome_user">Welcome, %1$s</string>
+    <string name="hint_search">Search title or course</string>
+    <string name="btn_logout">Log out</string>
+    <string name="empty_list">No documents match your search</string>
+    <string name="opening_doc">Opening: %1$s</string>
+    <string name="doc_details">%1$s, shared by %2$s</string>
+
+    <!-- Validation messages -->
+    <string name="error_email_required">Enter your email</string>
+    <string name="error_email_invalid">Enter a valid email, like name@example.com</string>
+    <string name="error_password_required">Enter your password</string>
+    <string name="error_password_short">Password must be 6 to 64 characters with no spaces</string>
+    <string name="error_password_weak">Use at least one letter and one number</string>
+    <string name="error_name_invalid">Enter your full name (letters only, 2 to 50 characters)</string>
+    <string name="error_confirm_mismatch">Passwords do not match</string>
+    <string name="error_course_required">Choose your course unit</string>
+    <string name="error_program_required">Choose your program</string>
+    <string name="error_agree_required">Please tick the box to continue</string>
+
+    <!-- Programmes and course units -->
+    <string name="program_computer_science">Computer Science</string>
+    <string name="program_information_technology">Information Technology</string>
+    <string name="program_business_it">Business Information Technology</string>
+    <string name="course_programming_fundamentals">Programming Fundamentals</string>
+    <string name="course_database_systems">Database Systems</string>
+    <string name="course_mobile_app_development">Mobile Application Development</string>
+    <string name="course_systems_analysis">Systems Analysis</string>
+    <string name="course_computer_networks">Computer Networks</string>
+    <string name="err_no_program">Choose a program first.</string>
+    <string name="err_no_course_units">This program has no course units yet.</string>
+
+    <!-- Server and network messages -->
+    <string name="doc_size">%1$d KB</string>
+    <string name="review_shared_by">shared by %1$s</string>
+    <string name="err_network">No internet connection.</string>
+    <string name="err_credentials">Incorrect email or password.</string>
+    <string name="err_exists">An account with this email already exists.</string>
+    <string name="err_weak">That password is too weak. Try a longer one.</string>
+    <string name="err_too_many">Too many attempts. Please wait and try again.</string>
+    <string name="err_generic">Something went wrong. Please try again.</string>
+    <string name="err_profile_missing">Your profile was not found.</string>
+    <string name="err_profile_broken">Your profile could not be read. Ask an admin to check it.</string>
+    <string name="err_deactivated">This account has been deactivated.</string>
+    <string name="err_unknown_role">Your role “%1$s” is not valid. Ask an admin to set it to STUDENT, PRESIDENT, LECTURER or ADMIN.</string>
+    <string name="err_unknown_role_blank">Your account has no role yet. Ask an admin to set it to STUDENT, PRESIDENT, LECTURER or ADMIN.</string>
+    <string name="err_not_allowed">You are not allowed to perform this action.</string>
+    <string name="err_catalog_rules">The catalogue is closed off by the Firestore rules. Publish firestore.rules and try again.</string>
+    <string name="err_session">Your session has expired. Please try again.</string>
+    <string name="err_file_too_large">The file is too large. Please select a smaller file.</string>
+    <string name="err_upload_denied">Upload denied. You do not have permission to upload this file.</string>
+    <string name="err_account_exists">An account with this email already exists.</string>
+
+    <!-- Roles -->
+    <string name="role_student">Student</string>
+    <string name="role_president">President</string>
+    <string name="role_lecturer">Lecturer</string>
+    <string name="role_admin">Admin</string>
+    <string name="role_unknown">No role</string>
+
+    <!-- Document status -->
+    <string name="status_pending">Waiting for review</string>
+    <string name="status_approved">Approved</string>
+    <string name="status_rejected">Rejected</string>
+    <string name="status_unknown">No status</string>
+
+    <!-- Dashboards -->
+    <string name="dash_title_president">President</string>
+    <string name="dash_title_lecturer">Lecturer inbox</string>
+    <string name="dash_title_admin">Admin dashboard</string>
+    <string name="dash_signed_in">%1$s · %2$s</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="logout_title">Log out?</string>
+    <string name="logout_message">You will need to sign in again to use UniLib.</string>
+
+    <!-- President -->
+    <string name="president_my_uploads">My uploads</string>
+    <string name="president_no_uploads">You have not shared anything yet.</string>
+
+    <!-- Lecturer and admin review -->
+    <string name="reviewer_pending">Waiting for review</string>
+    <string name="reviewer_nothing_pending">Nothing is waiting for review.</string>
+    <string name="review_waiting_admin">Waiting for an admin to approve it.</string>
+    <string name="err_self_review">You cannot review your own upload. An admin has to approve it.</string>
+    <string name="btn_approve">Approve</string>
+    <string name="btn_reject">Reject</string>
+    <string name="review_reason_hint">Why is this being rejected?</string>
+    <string name="review_reject_title">Reject document</string>
+    <string name="review_approved">Approved: %1$s</string>
+    <string name="review_rejected">Rejected: %1$s</string>
+
+    <!-- Admin members -->
+    <string name="admin_members">Members</string>
+    <string name="admin_no_members">No members found.</string>
+    <string name="admin_set_role">Make %1$s</string>
+    <string name="admin_deactivate">Deactivate this account</string>
+    <string name="admin_activate">Activate this account</string>
+    <string name="admin_role_updated">%1$s is now %2$s</string>
+    <string name="admin_member_updated">Updated %1$s</string>
+    <string name="admin_cannot_change_own_role">You cannot change your own account here.</string>
+
+    <!-- Admin: programmes and course units -->
+    <string name="admin_manage_catalog">Programs and courses</string>
+    <string name="catalog_title">Programs and course units</string>
+    <string name="catalog_programs">Programs</string>
+    <string name="catalog_course_units">Course units</string>
+    <string name="catalog_no_programs">No programs yet. Add one, or load the built in list.</string>
+    <string name="catalog_no_course_units">No course units under this program yet.</string>
+    <string name="catalog_add_program">Add program</string>
+    <string name="catalog_add_course">Add course unit</string>
+    <string name="btn_add_program">Add</string>
+    <string name="btn_add_course">Add</string>
+    <string name="catalog_seed">Load the built in list</string>
+    <string name="catalog_seeded">Loaded %1$d programs and course units.</string>
+    <string name="catalog_program_added">Added the program %1$s.</string>
+    <string name="catalog_course_added">Added the course unit %1$s.</string>
+    <string name="catalog_pick_program">Choose a program first.</string>
+    <string name="dialog_add_program">Add program</string>
+    <string name="dialog_add_course">Add course unit</string>
+    <string name="hint_program_name">Program name (for example Computer Science)</string>
+    <string name="hint_program_code">Program code (for example CSC)</string>
+    <string name="hint_course_code">Course number (for example CSC1101)</string>
+    <string name="hint_course_title">Course name (for example Programming Fundamentals)</string>
+    <string name="error_program_name_required">Enter the program name.</string>
+    <string name="error_program_code_required">Enter the program code.</string>
+    <string name="error_course_code_required">Enter the course number.</string>
+    <string name="error_course_title_required">Enter the course name.</string>
+    <string name="error_course_code_taken">That course number already exists under this program.</string>
+
+    <!-- Admin: create an account -->
+    <string name="admin_add_account">Create account</string>
+    <string name="add_account_title">Create an account</string>
+    <string name="add_account_intro">Create an account for a lecturer or a class president.</string>
+    <string name="hint_new_password">Password</string>
+    <string name="label_new_role">Role</string>
+    <string name="add_account_create">Create account</string>
+    <string name="add_account_created">Account created for %1$s.</string>
+    <string name="error_role_required">Choose a role.</string>
+
+    <!-- Upload -->
+    <string name="btn_upload">Share a document</string>
+    <string name="upload_title">Share a document</string>
+    <string name="hint_doc_title">Document title</string>
+    <string name="upload_no_file">No PDF chosen yet</string>
+    <string name="upload_choose_pdf">Choose PDF</string>
+    <string name="upload_file_chosen">%1$s  |  %2$d KB</string>
+    <string name="upload_pick_first">Choose a PDF first.</string>
+    <string name="upload_done">Uploaded. It is now in the library.</string>
+    <string name="upload_done_pending">Uploaded. It is now waiting for review.</string>
+    <string name="error_doc_title_required">Give the document a title.</string>
 </resources>

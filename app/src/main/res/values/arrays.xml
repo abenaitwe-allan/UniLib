@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The list of programs and course units is not fixed any more. The admin makes
+    them from the admin screen and the app reads them from Firestore. The list
+    the app starts with lives in CatalogDefaults, so that a student can still
+    register before the admin has added anything.
+-->
+<resources>
+</resources>

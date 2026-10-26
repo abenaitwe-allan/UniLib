@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!--
+        Every colour below is used as text on the light surfaces of the app, so
+        each one is dark enough to be read: at least 4.5 to 1 against the card
+        and the page background.
+    -->
+    <color name="unilib_primary">#1F3864</color>
+    <color name="unilib_accent">#094064</color>
+    <color name="unilib_surface">#F7F9FC</color>
+    <color name="unilib_card">#FFFFFF</color>
+    <color name="unilib_text">#1C1B1F</color>
+    <color name="unilib_text_secondary">#32373C</color>
+    <color name="unilib_error">#8F1E19</color>
+    <color name="unilib_success">#104515</color>
+    <color name="unilib_pending">#543300</color>
+    <color name="unilib_divider">#DADCE0</color>
+
+    <!-- Light tints, used behind coloured words such as the role labels. -->
+    <color name="unilib_primary_container">#D9E2F3</color>
+    <color name="unilib_accent_container">#DCE8F5</color>
+    <color name="unilib_error_container">#F9DEDC</color>
+    <color name="unilib_on_container">#12294D</color>
+    <color name="unilib_header_subtitle">#F2F5F9</color>
 </resources>

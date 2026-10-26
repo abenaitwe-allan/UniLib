@@ -1,8 +1,47 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.UniLib" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        The app paints its own light palette in the layouts, so it always uses the
+        light theme. Every colour the Material components draw with (hints, spinner
+        text, dropdown items, outlines) is pinned here as well, otherwise the
+        component picks its colour from the theme and the words end up invisible.
+    -->
+    <style name="Base.Theme.UniLib" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/unilib_primary</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorPrimaryContainer">@color/unilib_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/unilib_on_container</item>
+
+        <item name="colorSecondary">@color/unilib_accent</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+        <item name="colorSecondaryContainer">@color/unilib_accent_container</item>
+        <item name="colorOnSecondaryContainer">@color/unilib_on_container</item>
+
+        <item name="colorSurface">@color/unilib_surface</item>
+        <item name="colorOnSurface">@color/unilib_text</item>
+        <item name="colorSurfaceVariant">@color/unilib_surface</item>
+        <item name="colorOnSurfaceVariant">@color/unilib_text_secondary</item>
+        <item name="colorSurfaceContainerLowest">@color/unilib_card</item>
+        <item name="colorSurfaceContainerLow">@color/unilib_card</item>
+        <item name="colorSurfaceContainer">@color/unilib_card</item>
+        <item name="colorSurfaceContainerHigh">@color/unilib_card</item>
+        <item name="colorSurfaceContainerHighest">@color/unilib_card</item>
+
+        <item name="colorOutline">@color/unilib_divider</item>
+        <item name="colorOutlineVariant">@color/unilib_divider</item>
+
+        <item name="colorError">@color/unilib_error</item>
+        <item name="colorOnError">@android:color/white</item>
+        <item name="colorErrorContainer">@color/unilib_error_container</item>
+        <item name="colorOnErrorContainer">@color/unilib_error</item>
+
+        <item name="android:colorBackground">@color/unilib_surface</item>
+        <item name="android:textColorPrimary">@color/unilib_text</item>
+        <item name="android:textColorSecondary">@color/unilib_text_secondary</item>
+        <item name="android:textColorHint">@color/unilib_text_secondary</item>
+        <item name="android:colorControlActivated">@color/unilib_accent</item>
+        <item name="android:colorControlHighlight">@color/unilib_divider</item>
+        <item name="android:windowBackground">@color/unilib_surface</item>
     </style>
 
     <style name="Theme.UniLib" parent="Base.Theme.UniLib" />

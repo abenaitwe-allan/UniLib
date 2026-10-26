@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The row shown when a dropdown is closed. The colour is set here instead of
+    being taken from the platform layout, because the platform layout follows
+    the device theme and the words can end up white on a white background.
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/unilib_card"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:maxLines="1"
+    android:minHeight="48dp"
+    android:paddingStart="@dimen/spacing_m"
+    android:paddingEnd="@dimen/spacing_m"
+    android:textColor="@color/unilib_text"
+    android:textColorHint="@color/unilib_text_secondary"
+    android:textSize="@dimen/text_body" />
