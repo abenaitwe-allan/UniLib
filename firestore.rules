@@ -1,105 +1,65 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ---------- helpers ----------
+    function signedIn() { return request.auth != null; }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function role() { return me().role; }
+    function isActive() { return me().active == true; }
+    function isStaff() { return role() in ['PRESIDENT', 'LECTURER', 'ADMIN']; }
+    function isReviewer() { return role() in ['LECTURER', 'ADMIN']; }
 
-    function signedIn() {
-      return request.auth != null;
+    match /users/{uid} {
+      // read your own profile, or any profile if admin
+      allow read: if signedIn() && (request.auth.uid == uid || role() == 'ADMIN');
+      // you may create only your own profile, and only as an active STUDENT
+      allow create: if signedIn() && request.auth.uid == uid
+                    && request.resource.data.role == 'STUDENT'
+                    && request.resource.data.active == true;
+      // only admins change roles or active status
+      allow update: if signedIn() && role() == 'ADMIN';
+      allow delete: if false;
     }
 
-    // The role is read from the profile the app keeps in the users collection.
-    function role() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    match /documents/{docId} {
+      allow read: if signedIn() && isActive() && (
+                      resource.data.status == 'APPROVED'
+                      || isReviewer()
+                      || resource.data.uploaderId == request.auth.uid);
+
+      allow create: if signedIn() && isActive() && isStaff()
+                    && request.resource.data.uploaderId == request.auth.uid
+                    && (request.resource.data.status == 'PENDING'
+                        || (isReviewer() && request.resource.data.status == 'APPROVED'));
+
+      allow update: if signedIn() && isActive() && (
+                      isReviewer()
+                      || (role() == 'PRESIDENT'
+                          && resource.data.uploaderId == request.auth.uid
+                          && resource.data.status in ['PENDING', 'REJECTED']
+                          && request.resource.data.status == 'PENDING'));
+
+      allow delete: if signedIn() && isActive() && (
+                      role() == 'ADMIN'
+                      || (role() == 'LECTURER' && resource.data.uploaderId == request.auth.uid)
+                      || (role() == 'PRESIDENT' && resource.data.uploaderId == request.auth.uid
+                          && resource.data.status == 'PENDING'));
     }
-
-    function isAdmin() {
-      return signedIn() && role() == 'ADMIN';
-    }
-
-    function isLecturer() {
-      return signedIn() && role() == 'LECTURER';
-    }
-
-    function isPresident() {
-      return signedIn() && role() == 'PRESIDENT';
-    }
-
-    // The people who are allowed to put a document into the library.
-    function isStaff() {
-      return isAdmin() || isLecturer() || isPresident();
-    }
-
-    // ---------- the catalogue of programs and course units ----------
-
-    // Everyone may read the catalogue: a student picks a program while
-    // registering, before they have an account. Only the admin changes it.
-    match /programs/{programId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /courseUnits/{courseUnitId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // ---------- the people ----------
-
-    match /users/{userId} {
-      // The members list is only for the people who are signed in.
-      allow read: if signedIn();
-
-      // The admin creates the accounts of the lecturers and class presidents.
-      // A student who registers writes their own profile, and that always
-      // starts as a student.
-      allow create: if isAdmin()
-        || (signedIn()
-            && request.auth.uid == userId
-            && request.resource.data.role == 'STUDENT');
-
-      // The admin may change anybody. Everybody else may only change their
-      // own profile, and may not give themselves a different role.
-      allow update: if isAdmin()
-        || (signedIn()
-            && request.auth.uid == userId
-            && request.resource.data.role == resource.data.role
-            && request.resource.data.active == resource.data.active);
-
-      allow delete: if isAdmin();
-    }
-
-    // ---------- the documents in the library ----------
-
-    match /documents/{documentId} {
-      allow read: if signedIn();
-
-      // The admin may put a document straight into the library. The lecturers
-      // and the class presidents may only add one that still waits for review.
-      allow create: if isAdmin()
-        || ((isLecturer() || isPresident())
-            && request.resource.data.status == 'PENDING');
-
-      // The admin reviews the documents. The person who uploaded one may
-      // change it while it still waits for review.
-      allow update: if isAdmin()
-        || (signedIn()
-            && resource.data.uploaderId == request.auth.uid
-            && resource.data.status == 'PENDING'
-            && request.resource.data.status == 'PENDING');
-
-      allow delete: if isAdmin();
-    }
-
-    // ---------- the log of what happened ----------
 
     match /activityLogs/{logId} {
-      // The log entry is written in the same batch as the document, so every
-      // member of staff may add one. Only the admin reads the log.
-      allow read: if isAdmin();
-      allow create: if signedIn();
-      allow update, delete: if isAdmin();
+      allow create: if signedIn() && isActive() && isStaff();
+      allow read: if signedIn() && role() == 'ADMIN';
+      allow update, delete: if false;
+    }
+
+    match /programs/{programId} {
+      allow read: if true;
+      allow create, update, delete: if signedIn() && isActive() && role() == 'ADMIN';
+    }
+
+    match /courseUnits/{unitId} {
+      allow read: if true;
+      allow create, update, delete: if signedIn() && isActive() && role() == 'ADMIN';
     }
   }
 }

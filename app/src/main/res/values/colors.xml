@@ -20,6 +20,8 @@
     <color name="unilib_primary_container">#D9E2F3</color>
     <color name="unilib_accent_container">#DCE8F5</color>
     <color name="unilib_error_container">#F9DEDC</color>
+    <color name="unilib_success_container">#D8EFDC</color>
+    <color name="unilib_pending_container">#F6E7C6</color>
     <color name="unilib_on_container">#12294D</color>
     <color name="unilib_header_subtitle">#F2F5F9</color>
 </resources>

@@ -17,9 +17,7 @@ import java.util.List;
 /**
  * One row per document waiting for a review, with approve and reject buttons.
  *
- * <p>A lecturer who shared a document themselves cannot check their own work,
- * so for that row the buttons are replaced by a note saying an admin has to
- * approve it.
+ * <p>Both lecturers and admins can approve or reject every pending document.
  */
 public class ReviewAdapter extends BaseAdapter {
 
@@ -32,14 +30,11 @@ public class ReviewAdapter extends BaseAdapter {
     private final Context context;
     private final LayoutInflater inflater;
     private final OnReview listener;
-    /** The id of the signed in reviewer, so their own upload can be marked. */
-    private final String reviewerId;
     private final List<Document> items = new ArrayList<>();
 
-    public ReviewAdapter(Context context, String reviewerId, OnReview listener) {
+    public ReviewAdapter(Context context, OnReview listener) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
-        this.reviewerId = reviewerId;
         this.listener = listener;
     }
 
@@ -72,14 +67,14 @@ public class ReviewAdapter extends BaseAdapter {
         h.title.setText(d.getTitle());
         h.meta.setText(Labels.reviewMeta(context, d));
 
-        boolean ownUpload = reviewerId != null && reviewerId.equals(d.getUploaderId());
-        h.approve.setVisibility(ownUpload ? View.GONE : View.VISIBLE);
-        h.reject.setVisibility(ownUpload ? View.GONE : View.VISIBLE);
-        h.note.setVisibility(ownUpload ? View.VISIBLE : View.GONE);
-        if (!ownUpload) {
-            h.approve.setOnClickListener(v -> listener.onApprove(d));
-            h.reject.setOnClickListener(v -> listener.onReject(d));
-        }
+        h.note.setText(R.string.status_pending);
+        h.note.setBackgroundResource(R.drawable.bg_status_pending);
+        h.note.setTextColor(context.getColor(R.color.unilib_pending));
+        h.note.setVisibility(View.VISIBLE);
+        h.approve.setVisibility(View.VISIBLE);
+        h.reject.setVisibility(View.VISIBLE);
+        h.approve.setOnClickListener(v -> listener.onApprove(d));
+        h.reject.setOnClickListener(v -> listener.onReject(d));
         return convertView;
     }
 

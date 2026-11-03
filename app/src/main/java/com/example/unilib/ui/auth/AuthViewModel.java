@@ -37,9 +37,9 @@ public class AuthViewModel extends AndroidViewModel {
 
     public void login(String email, String password) { loading.setValue(true); repo.login(email, password, callback); }
     public void register(String name, String email, String password,
-                         String programId, String programName, String courseCode, String courseTitle) {
+                         String programId, String programName) {
         loading.setValue(true);
-        repo.register(name, email, password, programId, programName, courseCode, courseTitle, callback);
+        repo.register(name, email, password, programId, programName, callback);
     }
     public void restoreSession() { loading.setValue(true); repo.restoreSession(callback); }
 

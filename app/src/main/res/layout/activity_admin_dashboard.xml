@@ -14,47 +14,65 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/spacing_s">
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/spacing_m"
+        android:paddingVertical="@dimen/spacing_s">
 
-        <Button
-            android:id="@+id/btnUpload"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/btn_upload"
-            android:textColor="@color/unilib_accent" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnAddAccount"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/admin_add_account"
-            android:textColor="@color/unilib_accent" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewDocs"
+                style="@style/UniLib.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:text="@string/admin_view_docs" />
 
-        <Button
-            android:id="@+id/btnCatalog"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="0dp"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUpload"
+                style="@style/UniLib.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:text="@string/btn_upload" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/admin_manage_catalog"
-            android:textColor="@color/unilib_accent" />
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddAccount"
+                style="@style/UniLib.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1"
+                android:text="@string/admin_add_account" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCatalog"
+                style="@style/UniLib.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:layout_weight="1"
+                android:text="@string/admin_manage_catalog" />
+        </LinearLayout>
     </LinearLayout>
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/spacing_m"
-        android:paddingTop="@dimen/spacing_m"
-        android:paddingBottom="@dimen/spacing_s"
-        android:text="@string/reviewer_pending"
-        android:textColor="@color/unilib_text"
-        android:textSize="@dimen/text_body"
-        android:textStyle="bold" />
+        style="@style/UniLib.SectionHeader"
+        android:layout_marginHorizontal="@dimen/spacing_m"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:text="@string/reviewer_pending" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -88,16 +106,27 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingHorizontal="@dimen/spacing_m"
-        android:paddingTop="@dimen/spacing_m"
-        android:paddingBottom="@dimen/spacing_s"
-        android:text="@string/admin_members"
-        android:textColor="@color/unilib_text"
-        android:textSize="@dimen/text_body"
-        android:textStyle="bold" />
+        android:paddingTop="@dimen/spacing_s">
+
+        <TextView
+            style="@style/UniLib.SectionHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/admin_members" />
+
+        <Spinner
+            android:id="@+id/spMemberRole"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

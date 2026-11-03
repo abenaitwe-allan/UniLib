@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/unilib_card"
@@ -38,4 +39,18 @@
             android:textColor="@color/unilib_text_secondary"
             android:textSize="@dimen/text_secondary" />
     </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSave"
+        style="@style/UniLib.Button.SmallOutlined"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:focusable="false"
+        android:minWidth="0dp"
+        android:text="@string/offline_save"
+        app:icon="@drawable/ic_download"
+        app:iconGravity="textStart"
+        app:iconPadding="4dp"
+        app:iconSize="18dp" />
 </LinearLayout>

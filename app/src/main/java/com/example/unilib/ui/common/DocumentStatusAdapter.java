@@ -53,6 +53,7 @@ public class DocumentStatusAdapter extends BaseAdapter {
         h.meta.setText(Labels.documentMeta(context, d));
         h.status.setText(Labels.status(context, d.getStatus()));
         h.status.setTextColor(context.getColor(Labels.statusColor(context, d.getStatus())));
+        h.status.setBackgroundResource(Labels.statusBackground(context, d.getStatus()));
         return convertView;
     }
 

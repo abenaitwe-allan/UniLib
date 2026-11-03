@@ -33,7 +33,7 @@ public class AuthRepository {
     }
 
     public void register(String name, String email, String password,
-                         String programId, String programName, String courseCode, String courseTitle,
+                         String programId, String programName,
                          ResultCallback<User> cb) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(result -> {
@@ -44,8 +44,6 @@ public class AuthRepository {
                 u.setRole(Role.STUDENT.name());
                     u.setProgramId(programId);
                     u.setProgramName(programName);
-                    u.setCourseCode(courseCode);
-                    u.setCourseTitle(courseTitle);
                     u.setActive(true);
                     db.collection("users").document(uid).set(u)
                             .addOnSuccessListener(v -> { u.setId(uid); cb.onSuccess(u); })

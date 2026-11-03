@@ -81,20 +81,12 @@ public class DocumentRepository {
                         return;
                     }
 
-                    // A lecturer can make a mistake, so their upload waits for a
-                    // reviewer. Only an admin publishes straight away.
-                    boolean autoApprove = role == Role.ADMIN;
-
+                    // All uploads start as PENDING so reviewers (Admins and Lecturers)
+                    // can review, approve, or reject them before students see them.
                     draft.setUploaderId(uid);
                     draft.setUploaderName(user.getName());
                     draft.setCreatedAt(Timestamp.now());
-                    if (autoApprove) {
-                        draft.setStatus(DocStatus.APPROVED);
-                        draft.setReviewerId(uid);
-                        draft.setReviewedAt(Timestamp.now());
-                    } else {
-                        draft.setStatus(DocStatus.PENDING);
-                    }
+                    draft.setStatus(DocStatus.PENDING);
 
                     DocumentReference docRef = db.collection("documents").document();
                     DocumentReference logRef = db.collection("activityLogs").document();
@@ -152,8 +144,64 @@ public class DocumentRepository {
                 .addOnFailureListener(e -> callback.onError(friendly(e)));
     }
 
+    /** Documents belonging to a specific programme, newest first. */
+    public void listByProgram(String programId, String programName, ResultCallback<List<Document>> callback) {
+        db.collection("documents")
+                .get()
+                .addOnSuccessListener(snap -> {
+                    List<Document> all = sortByDate(snap);
+                    List<Document> filtered = new ArrayList<>();
+                    for (Document d : all) {
+                        boolean ok = (programId == null || programId.isEmpty())
+                                || (d.getProgramId() != null && d.getProgramId().equalsIgnoreCase(programId))
+                                || (d.getProgramName() != null && programName != null && d.getProgramName().equalsIgnoreCase(programName));
+                        if (ok) filtered.add(d);
+                    }
+                    callback.onSuccess(filtered);
+                })
+                .addOnFailureListener(e -> callback.onError(friendly(e)));
+    }
+
+    /** Deletes a document from Firestore. Only an admin may do this. */
+    public void deleteDocument(String documentId, ResultCallback<Void> callback) {
+        FirebaseUser firebaseUser = auth.getCurrentUser();
+        if (firebaseUser == null) {
+            callback.onError(ctx.getString(R.string.err_session));
+            return;
+        }
+        final String uid = firebaseUser.getUid();
+
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(userSnap -> {
+                    User user = userSnap.toObject(User.class);
+                    Role role = user == null ? null : user.parsedRole();
+                    if (user == null || !user.isActive() || role != Role.ADMIN) {
+                        callback.onError(ctx.getString(R.string.err_not_allowed));
+                        return;
+                    }
+
+                    DocumentReference docRef = db.collection("documents").document(documentId);
+                    DocumentReference logRef = db.collection("activityLogs").document();
+
+                    ActivityLog log = new ActivityLog();
+                    log.setDocumentId(documentId);
+                    log.setActorId(uid);
+                    log.setActorName(user.getName());
+                    log.setAction("DELETED");
+                    log.setTimestamp(Timestamp.now());
+
+                    WriteBatch batch = db.batch();
+                    batch.delete(docRef);
+                    batch.set(logRef, log);
+                    batch.commit()
+                            .addOnSuccessListener(v -> callback.onSuccess(null))
+                            .addOnFailureListener(e -> callback.onError(friendly(e)));
+                })
+                .addOnFailureListener(e -> callback.onError(friendly(e)));
+    }
+
     /**
-     * Approves or rejects a document. Only a lecturer or an admin may do this,
+     * Approves or rejects a document. Both a lecturer and an admin may do this,
      * and the role is read from Firestore again rather than trusted from the screen.
      */
     public void review(String documentId, boolean approve, String reason,
@@ -179,7 +227,7 @@ public class DocumentRepository {
                     DocumentReference logRef = db.collection("activityLogs").document();
 
                     Map<String, Object> changes = new HashMap<>();
-                    changes.put("status", approve ? DocStatus.APPROVED : DocStatus.REJECTED);
+                    changes.put("status", (approve ? DocStatus.APPROVED : DocStatus.REJECTED).name());
                     changes.put("reviewerId", uid);
                     changes.put("reviewedAt", Timestamp.now());
                     if (!approve) changes.put("rejectionReason", reason);
@@ -190,22 +238,6 @@ public class DocumentRepository {
                     log.setActorName(user.getName());
                     log.setAction(approve ? "APPROVED" : "REJECTED");
                     log.setTimestamp(Timestamp.now());
-
-                    // A lecturer cannot check their own work. An admin can, because
-                    // the admin is the one who looks over everybody's upload.
-                    if (role == Role.LECTURER) {
-                        db.collection("documents").document(documentId).get()
-                                .addOnSuccessListener(docSnap -> {
-                                    String uploaderId = docSnap.getString("uploaderId");
-                                    if (uid.equals(uploaderId)) {
-                                        callback.onError(ctx.getString(R.string.err_self_review));
-                                        return;
-                                    }
-                                    commitReview(docRef, logRef, changes, log, callback);
-                                })
-                                .addOnFailureListener(e -> callback.onError(friendly(e)));
-                        return;
-                    }
 
                     commitReview(docRef, logRef, changes, log, callback);
                 })

@@ -3,20 +3,26 @@ package com.example.unilib.ui.admin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.unilib.R;
+import com.example.unilib.data.CatalogLoader;
 import com.example.unilib.data.DocumentRepository;
 import com.example.unilib.data.ResultCallback;
 import com.example.unilib.data.UserRepository;
 import com.example.unilib.model.Document;
+import com.example.unilib.model.Program;
 import com.example.unilib.model.Role;
 import com.example.unilib.model.User;
 import com.example.unilib.ui.BaseDashboardActivity;
+import com.example.unilib.ui.common.DocumentActions;
 import com.example.unilib.ui.common.Labels;
 import com.example.unilib.ui.common.ReviewAdapter;
+import com.example.unilib.ui.common.SpinnerBinder;
 import com.example.unilib.ui.common.UserAdapter;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,8 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The admin's screen: the documents waiting for a decision and the list of
- * members, where a role can be given or taken away.
+ * The admin's screen: documents, catalog management, and member role filter.
  */
 public class AdminDashboardActivity extends BaseDashboardActivity {
 
@@ -38,6 +43,10 @@ public class AdminDashboardActivity extends BaseDashboardActivity {
     private UserAdapter userAdapter;
     private ProgressBar progressPending;
     private ProgressBar progressUsers;
+    private Spinner spMemberRole;
+
+    private final List<User> allUsers = new ArrayList<>();
+    private final List<Program> availablePrograms = new ArrayList<>();
 
     @Override protected int layoutResource() { return R.layout.activity_admin_dashboard; }
 
@@ -49,7 +58,6 @@ public class AdminDashboardActivity extends BaseDashboardActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Built here, not as a field: the context is not ready until now.
         documentRepo = new DocumentRepository(this);
         userRepo = new UserRepository(this);
 
@@ -57,7 +65,7 @@ public class AdminDashboardActivity extends BaseDashboardActivity {
         TextView emptyPending = findViewById(R.id.tvEmptyPending);
         progressPending = findViewById(R.id.progressPending);
 
-        reviewAdapter = new ReviewAdapter(this, myUid(), new ReviewAdapter.OnReview() {
+        reviewAdapter = new ReviewAdapter(this, new ReviewAdapter.OnReview() {
             @Override public void onApprove(Document document) {
                 approveDocument(documentRepo, document, AdminDashboardActivity.this::loadPending);
             }
@@ -71,15 +79,21 @@ public class AdminDashboardActivity extends BaseDashboardActivity {
         ListView usersList = findViewById(R.id.listUsers);
         TextView emptyUsers = findViewById(R.id.tvEmptyUsers);
         progressUsers = findViewById(R.id.progressUsers);
+        spMemberRole = findViewById(R.id.spMemberRole);
 
         userAdapter = new UserAdapter(this, this::showMemberDialog);
         usersList.setAdapter(userAdapter);
         usersList.setEmptyView(emptyUsers);
 
+        setupMemberRoleSpinner();
+
+        findViewById(R.id.btnViewDocs).setOnClickListener(v -> showProgramSelectionDialog());
         findViewById(R.id.btnAddAccount).setOnClickListener(v ->
                 startActivity(new Intent(this, AddAccountActivity.class)));
         findViewById(R.id.btnCatalog).setOnClickListener(v ->
                 startActivity(new Intent(this, ProgramManagerActivity.class)));
+
+        loadPrograms();
     }
 
     @Override
@@ -87,6 +101,143 @@ public class AdminDashboardActivity extends BaseDashboardActivity {
         super.onResume();
         loadPending();
         loadUsers();
+    }
+
+    private void setupMemberRoleSpinner() {
+        List<String> filters = new ArrayList<>();
+        filters.add(getString(R.string.filter_members_all));
+        filters.add(getString(R.string.filter_members_students));
+        filters.add(getString(R.string.filter_members_presidents));
+        filters.add(getString(R.string.filter_members_lecturers));
+        filters.add(getString(R.string.filter_members_admins));
+
+        SpinnerBinder.bind(spMemberRole, filters);
+        spMemberRole.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyMemberFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+    }
+
+    private void loadPrograms() {
+        new CatalogLoader(this).loadPrograms(new ResultCallback<List<Program>>() {
+            @Override
+            public void onSuccess(List<Program> result) {
+                availablePrograms.clear();
+                availablePrograms.addAll(result);
+            }
+
+            @Override
+            public void onError(String message) {
+                // Non-fatal if programs cannot be preloaded
+            }
+        });
+    }
+
+    /** Prompts Admin to select a Program, then displays all documents under it. */
+    private void showProgramSelectionDialog() {
+        if (availablePrograms.isEmpty()) {
+            new CatalogLoader(this).loadPrograms(new ResultCallback<List<Program>>() {
+                @Override
+                public void onSuccess(List<Program> result) {
+                    availablePrograms.clear();
+                    availablePrograms.addAll(result);
+                    displayProgramPickerDialog();
+                }
+
+                @Override
+                public void onError(String message) {
+                    showMessage(message);
+                }
+            });
+        } else {
+            displayProgramPickerDialog();
+        }
+    }
+
+    private void displayProgramPickerDialog() {
+        if (availablePrograms.isEmpty()) {
+            showMessage(getString(R.string.catalog_no_programs));
+            return;
+        }
+
+        List<String> names = new ArrayList<>();
+        names.add(getString(R.string.all_programs));
+        for (Program p : availablePrograms) names.add(p.getName());
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.admin_select_program)
+                .setItems(names.toArray(new String[0]), (dialog, which) -> {
+                    if (which == 0) {
+                        showProgramDocuments(null, getString(R.string.all_programs));
+                    } else {
+                        Program p = availablePrograms.get(which - 1);
+                        showProgramDocuments(p.getId(), p.getName());
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, null)
+                .show();
+    }
+
+    /** Opens a dialog/list displaying documents under the selected program with a Delete option. */
+    private void showProgramDocuments(String programId, String programName) {
+        documentRepo.listByProgram(programId, programName, new ResultCallback<List<Document>>() {
+            @Override
+            public void onSuccess(List<Document> documents) {
+                if (documents.isEmpty()) {
+                    showMessage(getString(R.string.empty_list));
+                    return;
+                }
+
+                ListView listView = new ListView(AdminDashboardActivity.this);
+                AdminDocumentAdapter docAdapter = new AdminDocumentAdapter(AdminDashboardActivity.this, doc -> askToDeleteDocument(doc, () -> showProgramDocuments(programId, programName)));
+                docAdapter.submit(documents);
+                listView.setAdapter(docAdapter);
+
+                listView.setOnItemClickListener((parent, view, position, id) -> {
+                    Document doc = docAdapter.getItem(position);
+                    DocumentActions.open(AdminDashboardActivity.this, doc);
+                });
+
+                new MaterialAlertDialogBuilder(AdminDashboardActivity.this)
+                        .setTitle(programName)
+                        .setView(listView)
+                        .setPositiveButton(R.string.btn_cancel, null)
+                        .show();
+            }
+
+            @Override
+            public void onError(String message) {
+                showMessage(message);
+            }
+        });
+    }
+
+    private void askToDeleteDocument(Document document, Runnable onDeleted) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.admin_confirm_delete_title)
+                .setMessage(getString(R.string.admin_confirm_delete_msg, document.getTitle()))
+                .setNegativeButton(R.string.btn_cancel, null)
+                .setPositiveButton(R.string.admin_delete_doc, (dialog, which) -> {
+                    documentRepo.deleteDocument(document.getId(), new ResultCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void result) {
+                            showMessage(getString(R.string.admin_doc_deleted, document.getTitle()));
+                            loadPending();
+                            if (onDeleted != null) onDeleted.run();
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            showMessage(message);
+                        }
+                    });
+                })
+                .show();
     }
 
     /** Reads the documents that are still waiting for a decision. */
@@ -110,13 +261,37 @@ public class AdminDashboardActivity extends BaseDashboardActivity {
         userRepo.listUsers(new ResultCallback<List<User>>() {
             @Override public void onSuccess(List<User> users) {
                 progressUsers.setVisibility(View.GONE);
-                userAdapter.submit(users);
+                allUsers.clear();
+                allUsers.addAll(users);
+                applyMemberFilter();
             }
             @Override public void onError(String message) {
                 progressUsers.setVisibility(View.GONE);
                 showMessage(message);
             }
         });
+    }
+
+    private void applyMemberFilter() {
+        int pos = spMemberRole.getSelectedItemPosition();
+        Role targetRole = null;
+        if (pos == 1) targetRole = Role.STUDENT;
+        else if (pos == 2) targetRole = Role.PRESIDENT;
+        else if (pos == 3) targetRole = Role.LECTURER;
+        else if (pos == 4) targetRole = Role.ADMIN;
+
+        if (targetRole == null) {
+            userAdapter.submit(allUsers);
+            return;
+        }
+
+        List<User> filtered = new ArrayList<>();
+        for (User u : allUsers) {
+            if (u.parsedRole() == targetRole) {
+                filtered.add(u);
+            }
+        }
+        userAdapter.submit(filtered);
     }
 
     /** Lets the admin pick a new role for a member, or switch the account off. */
@@ -178,12 +353,6 @@ public class AdminDashboardActivity extends BaseDashboardActivity {
     private boolean isMe(User user) {
         FirebaseUser me = FirebaseAuth.getInstance().getCurrentUser();
         return me != null && me.getUid().equals(user.getId());
-    }
-
-    /** The id of the signed in admin, used to spot their own upload. */
-    private String myUid() {
-        FirebaseUser me = FirebaseAuth.getInstance().getCurrentUser();
-        return me == null ? null : me.getUid();
     }
 
     private String nameOf(User user) {

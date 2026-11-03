@@ -1,6 +1,5 @@
 package com.example.unilib.ui.auth;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.View;
@@ -14,23 +13,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.unilib.R;
 import com.example.unilib.data.CatalogLoader;
-import com.example.unilib.model.CourseUnit;
+import com.example.unilib.data.ResultCallback;
 import com.example.unilib.model.Program;
 import com.example.unilib.ui.RoleRouter;
-import com.example.unilib.ui.common.ProgramCoursePicker;
+import com.example.unilib.ui.common.SpinnerBinder;
 import com.example.unilib.util.Validators;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RegisterActivity extends AppCompatActivity {
     private AuthViewModel vm;
     private TextInputLayout tilName, tilEmail, tilPassword, tilConfirm;
     private TextInputEditText etName, etEmail, etPassword, etConfirm;
-    private Spinner spCourse;
-    private ProgramCoursePicker picker;
+    private Spinner spProgram;
+    private final List<Program> programs = new ArrayList<>();
     private CheckBox cbAgree;
-    private TextView tvCourseError, tvAgreeError;
+    private TextView tvAgreeError;
     private Button btnRegister;
     private ProgressBar progress;
 
@@ -48,24 +50,18 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         etConfirm = findViewById(R.id.etConfirm);
-        spCourse = findViewById(R.id.spCourse);
+        spProgram = findViewById(R.id.spProgram);
         cbAgree = findViewById(R.id.cbAgree);
-        tvCourseError = findViewById(R.id.tvCourseError);
         tvAgreeError = findViewById(R.id.tvAgreeError);
         btnRegister = findViewById(R.id.btnRegister);
         progress = findViewById(R.id.progress);
 
-        // The program decides which course units are offered.
-        picker = new ProgramCoursePicker(findViewById(R.id.spProgram), spCourse,
-                new CatalogLoader(this), false);
-        picker.setOnChanged((program, courseUnit) -> {
-            if (tvCourseError.getVisibility() == View.VISIBLE) {
-                tvCourseError.setVisibility(View.GONE);
-            }
-        });
-        picker.load();
+        // A student only chooses the programme. Every document under that
+        // programme is visible on their dashboard, whatever the course unit.
+        loadPrograms();
 
-        btnRegister.setOnClickListener(v -> attemptRegister());        findViewById(R.id.tvBackToLogin).setOnClickListener(v -> finish());
+        btnRegister.setOnClickListener(v -> attemptRegister());
+        findViewById(R.id.tvBackToLogin).setOnClickListener(v -> finish());
         cbAgree.setOnCheckedChangeListener((b, checked) -> {
             if (checked) tvAgreeError.setVisibility(View.GONE);
         });
@@ -87,6 +83,30 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    private void loadPrograms() {
+        new CatalogLoader(this).loadPrograms(new ResultCallback<List<Program>>() {
+            @Override public void onSuccess(List<Program> result) {
+                programs.clear();
+                programs.addAll(result);
+                List<String> names = new ArrayList<>();
+                names.add(getString(R.string.select_program));
+                for (Program program : programs) names.add(program.getName());
+                SpinnerBinder.bind(spProgram, names);
+            }
+
+            @Override public void onError(String message) {
+                Snackbar.make(findViewById(android.R.id.content), message,
+                        Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private Program selectedProgram() {
+        int pos = spProgram.getSelectedItemPosition();
+        if (pos <= 0 || pos - 1 >= programs.size()) return null;
+        return programs.get(pos - 1);
+    }
+
     private void attemptRegister() {
         String name = textOf(etName).trim();
         String email = textOf(etEmail).trim();
@@ -94,44 +114,47 @@ public class RegisterActivity extends AppCompatActivity {
         String confirm = textOf(etConfirm);
         boolean valid = true;
 
-        tilName.setError(null); tilEmail.setError(null);
-        tilPassword.setError(null); tilConfirm.setError(null);
-        tvCourseError.setVisibility(View.GONE);
+        tilName.setError(null);
+        tilEmail.setError(null);
+        tilPassword.setError(null);
+        tilConfirm.setError(null);
         tvAgreeError.setVisibility(View.GONE);
 
         if (!Validators.isValidName(name)) {
-            tilName.setError(getString(R.string.error_name_invalid)); valid = false;
+            tilName.setError(getString(R.string.error_name_invalid));
+            valid = false;
         }
         if (email.isEmpty()) {
-            tilEmail.setError(getString(R.string.error_email_required)); valid = false;
+            tilEmail.setError(getString(R.string.error_email_required));
+            valid = false;
         } else if (!Validators.isValidEmail(email)) {
-            tilEmail.setError(getString(R.string.error_email_invalid)); valid = false;
+            tilEmail.setError(getString(R.string.error_email_invalid));
+            valid = false;
         }
         if (!Validators.isValidPassword(password)) {
-            tilPassword.setError(getString(R.string.error_password_short)); valid = false;
+            tilPassword.setError(getString(R.string.error_password_short));
+            valid = false;
         } else if (!Validators.hasLetterAndDigit(password)) {
-            tilPassword.setError(getString(R.string.error_password_weak)); valid = false;
+            tilPassword.setError(getString(R.string.error_password_weak));
+            valid = false;
         }
         if (!confirm.equals(password)) {
-            tilConfirm.setError(getString(R.string.error_confirm_mismatch)); valid = false;
+            tilConfirm.setError(getString(R.string.error_confirm_mismatch));
+            valid = false;
         }
-        Program program = picker.selectedProgram();
-        CourseUnit courseUnit = picker.selectedCourseUnit();
+        Program program = selectedProgram();
         if (program == null) {
             Snackbar.make(findViewById(android.R.id.content),
                     getString(R.string.error_program_required), Snackbar.LENGTH_LONG).show();
             valid = false;
-        } else if (courseUnit == null) {
-            tvCourseError.setVisibility(View.VISIBLE);
-            valid = false;
         }
         if (!cbAgree.isChecked()) {
-            tvAgreeError.setVisibility(View.VISIBLE); valid = false;
+            tvAgreeError.setVisibility(View.VISIBLE);
+            valid = false;
         }
         if (!valid) return;
 
-        vm.register(name, email, password, program.getId(), program.getName(),
-                courseUnit.getCode(), courseUnit.getTitle());
+        vm.register(name, email, password, program.getId(), program.getName());
     }
 
     private String textOf(TextInputEditText field) {

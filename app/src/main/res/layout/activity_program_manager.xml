@@ -8,23 +8,19 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/unilib_primary"
         android:paddingHorizontal="@dimen/spacing_m"
-        android:paddingTop="@dimen/spacing_m"
+        android:paddingVertical="@dimen/spacing_m"
         android:text="@string/catalog_title"
-        android:textColor="@color/unilib_primary"
-        android:textSize="@dimen/text_heading"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/spacing_m"
-        android:paddingTop="@dimen/spacing_s"
-        android:paddingBottom="@dimen/spacing_s"
-        android:text="@string/catalog_programs"
-        android:textColor="@color/unilib_text"
-        android:textSize="@dimen/text_body"
-        android:textStyle="bold" />
+        style="@style/UniLib.SectionHeader"
+        android:layout_marginHorizontal="@dimen/spacing_m"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:text="@string/catalog_programs" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -58,40 +54,21 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <LinearLayout
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddProgram"
+        style="@style/UniLib.Button.Outlined"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/spacing_s">
-
-        <Button
-            android:id="@+id/btnAddProgram"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/catalog_add_program" />
-
-        <Button
-            android:id="@+id/btnSeed"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/catalog_seed" />
-    </LinearLayout>
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="@dimen/spacing_m"
+        android:layout_marginVertical="4dp"
+        android:text="@string/catalog_add_program" />
 
     <TextView
         android:id="@+id/tvCourseHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/spacing_m"
-        android:paddingTop="@dimen/spacing_m"
-        android:paddingBottom="@dimen/spacing_s"
-        android:text="@string/catalog_course_units"
-        android:textColor="@color/unilib_text"
-        android:textSize="@dimen/text_body"
-        android:textStyle="bold" />
+        style="@style/UniLib.SectionHeader"
+        android:layout_marginHorizontal="@dimen/spacing_m"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:text="@string/catalog_course_units" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -125,11 +102,12 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAddCourse"
-        style="@style/Widget.Material3.Button.TonalButton"
+        style="@style/UniLib.Button.Outlined"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/spacing_s"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="@dimen/spacing_m"
+        android:layout_marginVertical="@dimen/spacing_s"
         android:text="@string/catalog_add_course" />
 </LinearLayout>

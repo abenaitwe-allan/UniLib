@@ -23,6 +23,7 @@ import com.example.unilib.model.User;
 import com.example.unilib.ui.auth.LoginActivity;
 import com.example.unilib.ui.common.Labels;
 import com.example.unilib.ui.upload.UploadActivity;
+import com.example.unilib.util.NotificationHelper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -160,6 +161,7 @@ public abstract class BaseDashboardActivity extends AppCompatActivity {
         repo.review(document.getId(), true, null, new ResultCallback<Void>() {
             @Override public void onSuccess(Void result) {
                 showMessage(getString(R.string.review_approved, document.getTitle()));
+                NotificationHelper.showApprovedNotification(BaseDashboardActivity.this, document);
                 if (onDone != null) onDone.run();
             }
             @Override public void onError(String message) {

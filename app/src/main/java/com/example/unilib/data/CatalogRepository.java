@@ -105,6 +105,39 @@ public class CatalogRepository {
                 .addOnFailureListener(e -> callback.onError(friendly(e)));
     }
 
+    /** Deletes a programme and its course units from Firestore. */
+    public void deleteProgram(String programId, ResultCallback<Void> callback) {
+        if (programId == null || programId.isEmpty()) {
+            callback.onSuccess(null);
+            return;
+        }
+        db.collection("programs").document(programId).delete()
+                .addOnSuccessListener(v -> {
+                    db.collection("courseUnits")
+                            .whereEqualTo("programId", programId)
+                            .get()
+                            .addOnSuccessListener(snap -> {
+                                for (DocumentSnapshot doc : snap.getDocuments()) {
+                                    doc.getReference().delete();
+                                }
+                                callback.onSuccess(null);
+                            })
+                            .addOnFailureListener(e -> callback.onSuccess(null));
+                })
+                .addOnFailureListener(e -> callback.onError(friendly(e)));
+    }
+
+    /** Deletes a course unit from Firestore. */
+    public void deleteCourseUnit(String courseUnitId, ResultCallback<Void> callback) {
+        if (courseUnitId == null || courseUnitId.isEmpty()) {
+            callback.onSuccess(null);
+            return;
+        }
+        db.collection("courseUnits").document(courseUnitId).delete()
+                .addOnSuccessListener(v -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(friendly(e)));
+    }
+
     /**
      * Copies the programmes and course units the app ships with into Firestore,
      * so the admin can then rename, add to or remove them. Anything that is
@@ -195,26 +228,29 @@ public class CatalogRepository {
 
     private List<Program> readPrograms(QuerySnapshot snap) {
         List<Program> list = new ArrayList<>();
+        if (snap == null) return list;
         for (DocumentSnapshot doc : snap.getDocuments()) {
+            if (doc == null || !doc.exists()) continue;
+            Program program = null;
             try {
-                Program program = doc.toObject(Program.class);
-                if (program != null) {
-                    program.setId(doc.getId());
-                    list.add(program);
-                }
-            } catch (RuntimeException e) {
-                // Skip a programme we cannot read rather than losing the list.
+                program = doc.toObject(Program.class);
+            } catch (Exception ignored) { }
+
+            if (program == null) {
+                program = new Program();
+                program.setName(doc.getString("name"));
+                program.setCode(doc.getString("code"));
+            }
+
+            if (program.getName() != null && !program.getName().trim().isEmpty()) {
+                program.setId(doc.getId());
+                list.add(program);
             }
         }
-        Collections.sort(list, new Comparator<Program>() {
-            @Override public int compare(Program a, Program b) {
-                long at = a.getCreatedAt() == null ? 0 : a.getCreatedAt().getSeconds();
-                long bt = b.getCreatedAt() == null ? 0 : b.getCreatedAt().getSeconds();
-                if (at != bt) return Long.compare(at, bt);
-                String an = a.getName() == null ? "" : a.getName();
-                String bn = b.getName() == null ? "" : b.getName();
-                return an.compareToIgnoreCase(bn);
-            }
+        Collections.sort(list, (a, b) -> {
+            String an = a.getName() == null ? "" : a.getName().trim();
+            String bn = b.getName() == null ? "" : b.getName().trim();
+            return an.compareToIgnoreCase(bn);
         });
         return list;
     }

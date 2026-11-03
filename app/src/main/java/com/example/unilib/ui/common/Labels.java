@@ -50,6 +50,16 @@ public final class Labels {
         }
     }
 
+    /** The bordered background that matches a document status. */
+    public static int statusBackground(Context ctx, DocStatus status) {
+        if (status == null) return R.drawable.bg_status_pending;
+        switch (status) {
+            case APPROVED: return R.drawable.bg_status_approved;
+            case REJECTED: return R.drawable.bg_status_rejected;
+            default:       return R.drawable.bg_status_pending;
+        }
+    }
+
     /**
      * The program and the course unit of a document, as one line. Documents
      * that were shared before the program was picked only have the course

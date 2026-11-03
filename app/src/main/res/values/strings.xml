@@ -38,6 +38,24 @@
     <string name="empty_list">No documents match your search</string>
     <string name="opening_doc">Opening: %1$s</string>
     <string name="doc_details">%1$s, shared by %2$s</string>
+    <string name="program_documents">Documents in %1$s</string>
+    <string name="program_documents_unknown">Documents in your programme</string>
+
+    <!-- Offline documents and PDF opening -->
+    <string name="offline_filter">Offline</string>
+    <string name="offline_filter_count">Offline (%1$d)</string>
+    <string name="offline_save">Save</string>
+    <string name="offline_saved">Saved</string>
+    <string name="offline_empty">No saved documents yet. Tap Save on any document to keep it offline.</string>
+    <string name="offline_downloading">Saving %1$s…</string>
+    <string name="offline_saved_toast">Saved offline: %1$s</string>
+    <string name="offline_removed_toast">Removed offline copy: %1$s</string>
+    <string name="offline_failed">Could not save this document. Check your connection and try again.</string>
+    <string name="offline_need_internet">No internet connection. Connect to internet to download and open this document.</string>
+    <string name="open_failed">No app can open this PDF. Install a PDF reader and try again.</string>
+    <string name="page_indicator">Page %1$d of %2$d</string>
+    <string name="notif_doc_approved_title">New Study Material Approved!</string>
+    <string name="notif_doc_approved_msg">\"%1$s\" is now available for %2$s.</string>
 
     <!-- Validation messages -->
     <string name="error_email_required">Enter your email</string>
@@ -109,6 +127,10 @@
     <!-- President -->
     <string name="president_my_uploads">My uploads</string>
     <string name="president_no_uploads">You have not shared anything yet.</string>
+    <string name="president_tab_library">Library</string>
+    <string name="president_tab_uploads">My uploads</string>
+    <string name="president_library_program">Library · %1$s</string>
+    <string name="president_library_empty">No approved documents in your programme yet.</string>
 
     <!-- Lecturer and admin review -->
     <string name="reviewer_pending">Waiting for review</string>
@@ -131,6 +153,23 @@
     <string name="admin_role_updated">%1$s is now %2$s</string>
     <string name="admin_member_updated">Updated %1$s</string>
     <string name="admin_cannot_change_own_role">You cannot change your own account here.</string>
+    <string name="admin_view_docs">View Documents</string>
+    <string name="admin_select_program">Select Program to view documents</string>
+    <string name="admin_delete_doc">Delete</string>
+    <string name="admin_confirm_delete_title">Delete Document</string>
+    <string name="admin_confirm_delete_msg">Are you sure you want to delete \"%1$s\"? This cannot be undone.</string>
+    <string name="admin_doc_deleted">Deleted document: %1$s</string>
+    <string name="admin_delete_program_title">Delete Programme?</string>
+    <string name="admin_delete_program_msg">Are you sure you want to delete \"%1$s\"? This will also delete all course units under this programme.</string>
+    <string name="admin_program_deleted">Deleted programme: %1$s</string>
+    <string name="admin_delete_course_title">Delete Course Unit?</string>
+    <string name="admin_delete_course_msg">Are you sure you want to delete \"%1$s\"?</string>
+    <string name="admin_course_deleted">Deleted course unit: %1$s</string>
+    <string name="filter_members_all">All Members</string>
+    <string name="filter_members_students">Students</string>
+    <string name="filter_members_presidents">Presidents</string>
+    <string name="filter_members_lecturers">Lecturers</string>
+    <string name="filter_members_admins">Admins</string>
 
     <!-- Admin: programmes and course units -->
     <string name="admin_manage_catalog">Programs and courses</string>

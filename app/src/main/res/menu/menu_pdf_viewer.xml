@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_zoom_in"
+        android:icon="@drawable/ic_zoom_in"
+        android:title="Zoom In"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_zoom_out"
+        android:icon="@drawable/ic_zoom_out"
+        android:title="Zoom Out"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_save_offline"
+        android:icon="@drawable/ic_download"
+        android:title="@string/offline_save"
+        app:showAsAction="always" />
+</menu>

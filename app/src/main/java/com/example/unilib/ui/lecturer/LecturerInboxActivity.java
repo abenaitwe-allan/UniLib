@@ -13,8 +13,6 @@ import com.example.unilib.model.Document;
 import com.example.unilib.model.Role;
 import com.example.unilib.ui.BaseDashboardActivity;
 import com.example.unilib.ui.common.ReviewAdapter;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -46,7 +44,7 @@ public class LecturerInboxActivity extends BaseDashboardActivity {
         TextView empty = findViewById(R.id.tvEmpty);
         progress = findViewById(R.id.progress);
 
-        adapter = new ReviewAdapter(this, myUid(), new ReviewAdapter.OnReview() {
+        adapter = new ReviewAdapter(this, new ReviewAdapter.OnReview() {
             @Override public void onApprove(Document document) {
                 approveDocument(repo, document, LecturerInboxActivity.this::loadPending);
             }
@@ -56,12 +54,6 @@ public class LecturerInboxActivity extends BaseDashboardActivity {
         });
         list.setAdapter(adapter);
         list.setEmptyView(empty);
-    }
-
-    /** The id of the signed in lecturer, used to spot their own upload. */
-    private String myUid() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        return user == null ? null : user.getUid();
     }
 
     @Override

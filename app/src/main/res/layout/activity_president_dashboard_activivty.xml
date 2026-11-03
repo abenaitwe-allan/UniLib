@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,34 +12,58 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnUpload"
-        style="@style/Widget.Material3.Button.TextButton"
+        style="@style/UniLib.Button.Outlined"
         android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_marginStart="@dimen/spacing_m"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:minWidth="0dp"
+        android:text="@string/btn_upload" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleSection"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_s"
-        android:text="@string/btn_upload"
-        android:textColor="@color/unilib_accent" />
+        android:layout_marginHorizontal="@dimen/spacing_m"
+        android:layout_marginTop="@dimen/spacing_s"
+        app:checkedButton="@id/btnTabLibrary"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTabLibrary"
+            style="@style/UniLib.Button.Toggle"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:text="@string/president_tab_library" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTabUploads"
+            style="@style/UniLib.Button.Toggle"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:text="@string/president_tab_uploads" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <TextView
         android:id="@+id/tvSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/spacing_m"
-        android:paddingTop="@dimen/spacing_m"
-        android:paddingBottom="@dimen/spacing_s"
-        android:text="@string/president_my_uploads"
-        android:textColor="@color/unilib_text"
-        android:textSize="@dimen/text_body"
-        android:textStyle="bold" />
+        style="@style/UniLib.SectionHeader"
+        android:layout_marginHorizontal="@dimen/spacing_m"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:text="@string/president_tab_library" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/spacing_s"
         android:layout_weight="1">
 
         <ListView
-            android:id="@+id/listMyUploads"
+            android:id="@+id/listDocuments"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@color/unilib_divider"
@@ -51,7 +76,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="@dimen/spacing_l"
-            android:text="@string/president_no_uploads"
+            android:text="@string/president_library_empty"
             android:textColor="@color/unilib_text_secondary"
             android:textSize="@dimen/text_body"
             android:visibility="gone" />

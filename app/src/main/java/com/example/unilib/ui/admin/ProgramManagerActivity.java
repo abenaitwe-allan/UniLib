@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -27,8 +26,7 @@ import java.util.List;
 
 /**
  * The screen where the admin makes the programs and the course units under
- * them. A student only ever sees the course units of the program they picked,
- * so this screen decides what the rest of the app offers.
+ * them. Tapping or long-pressing any item allows the admin to delete it with validation.
  */
 public class ProgramManagerActivity extends AppCompatActivity {
 
@@ -48,7 +46,6 @@ public class ProgramManagerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_program_manager);
 
-        // Built here, not as a field: the context is not ready until now.
         catalog = new CatalogRepository(this);
 
         progressPrograms = findViewById(R.id.progressPrograms);
@@ -59,9 +56,16 @@ public class ProgramManagerActivity extends AppCompatActivity {
         programAdapter = new ProgramAdapter();
         programsList.setAdapter(programAdapter);
         programsList.setEmptyView(findViewById(R.id.tvEmptyPrograms));
+        
         programsList.setOnItemClickListener((parent, view, position, id) -> {
             selectedProgram = programAdapter.getItem(position);
             loadCourseUnits();
+        });
+
+        programsList.setOnItemLongClickListener((parent, view, position, id) -> {
+            Program program = programAdapter.getItem(position);
+            askToDeleteProgram(program);
+            return true;
         });
 
         ListView coursesList = findViewById(R.id.listCourses);
@@ -69,9 +73,19 @@ public class ProgramManagerActivity extends AppCompatActivity {
         coursesList.setAdapter(courseAdapter);
         coursesList.setEmptyView(findViewById(R.id.tvEmptyCourses));
 
+        coursesList.setOnItemClickListener((parent, view, position, id) -> {
+            CourseUnit unit = courseAdapter.getItem(position);
+            askToDeleteCourseUnit(unit);
+        });
+
+        coursesList.setOnItemLongClickListener((parent, view, position, id) -> {
+            CourseUnit unit = courseAdapter.getItem(position);
+            askToDeleteCourseUnit(unit);
+            return true;
+        });
+
         findViewById(R.id.btnAddProgram).setOnClickListener(v -> askForProgram());
         findViewById(R.id.btnAddCourse).setOnClickListener(v -> askForCourseUnit());
-        findViewById(R.id.btnSeed).setOnClickListener(v -> seedDefaults());
     }
 
     @Override
@@ -87,7 +101,6 @@ public class ProgramManagerActivity extends AppCompatActivity {
             @Override public void onSuccess(List<Program> programs) {
                 progressPrograms.setVisibility(View.GONE);
                 programAdapter.submit(programs);
-                // Keep showing the course units of the program that was picked.
                 if (selectedProgram != null) {
                     for (Program program : programs) {
                         if (program.getId() != null && program.getId().equals(selectedProgram.getId())) {
@@ -99,6 +112,9 @@ public class ProgramManagerActivity extends AppCompatActivity {
                 }
                 if (!programs.isEmpty()) {
                     selectedProgram = programs.get(0);
+                    loadCourseUnits();
+                } else {
+                    selectedProgram = null;
                     loadCourseUnits();
                 }
             }
@@ -129,6 +145,58 @@ public class ProgramManagerActivity extends AppCompatActivity {
                 showMessage(message);
             }
         });
+    }
+
+    /** Asks for validation confirmation before deleting a programme. */
+    private void askToDeleteProgram(Program program) {
+        if (program == null) return;
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.admin_delete_program_title)
+                .setMessage(getString(R.string.admin_delete_program_msg, program.getName()))
+                .setNegativeButton(R.string.btn_cancel, null)
+                .setPositiveButton(R.string.admin_delete_doc, (dialog, which) -> {
+                    catalog.deleteProgram(program.getId(), new ResultCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void result) {
+                            showMessage(getString(R.string.admin_program_deleted, program.getName()));
+                            if (selectedProgram != null && selectedProgram.getId() != null
+                                    && selectedProgram.getId().equals(program.getId())) {
+                                selectedProgram = null;
+                            }
+                            loadPrograms();
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            showMessage(message);
+                        }
+                    });
+                })
+                .show();
+    }
+
+    /** Asks for validation confirmation before deleting a course unit. */
+    private void askToDeleteCourseUnit(CourseUnit unit) {
+        if (unit == null) return;
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.admin_delete_course_title)
+                .setMessage(getString(R.string.admin_delete_course_msg, unit.label()))
+                .setNegativeButton(R.string.btn_cancel, null)
+                .setPositiveButton(R.string.admin_delete_doc, (dialog, which) -> {
+                    catalog.deleteCourseUnit(unit.getId(), new ResultCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void result) {
+                            showMessage(getString(R.string.admin_course_deleted, unit.label()));
+                            loadCourseUnits();
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            showMessage(message);
+                        }
+                    });
+                })
+                .show();
     }
 
     /** Asks for the name and the code of a new program. */
@@ -219,7 +287,6 @@ public class ProgramManagerActivity extends AppCompatActivity {
     }
 
     private void addCourseUnit(String code, String title) {
-        // The same course number must not be used twice under one program.
         for (CourseUnit unit : courseAdapter.items) {
             if (unit.getCode() != null && unit.getCode().equalsIgnoreCase(code)) {
                 showMessage(getString(R.string.error_course_code_taken));
@@ -236,19 +303,6 @@ public class ProgramManagerActivity extends AppCompatActivity {
                         showMessage(message);
                     }
                 });
-    }
-
-    /** Copies the list the app ships with into Firestore. */
-    private void seedDefaults() {
-        catalog.seedDefaults(new ResultCallback<Integer>() {
-            @Override public void onSuccess(Integer count) {
-                showMessage(getString(R.string.catalog_seeded, count));
-                loadPrograms();
-            }
-            @Override public void onError(String message) {
-                showMessage(message);
-            }
-        });
     }
 
     private void showMessage(String message) {

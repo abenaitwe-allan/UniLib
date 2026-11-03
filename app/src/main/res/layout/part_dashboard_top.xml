@@ -10,9 +10,12 @@
     android:paddingVertical="@dimen/spacing_s">
 
     <LinearLayout
+        android:id="@+id/layoutProfileInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
         android:orientation="vertical">
 
         <TextView
@@ -31,16 +34,35 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvDashEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/unilib_header_subtitle"
-            android:textSize="@dimen/text_secondary" />
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvDashProgram"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/unilib_header_subtitle"
+            android:textSize="12sp" />
     </LinearLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
-        style="@style/Widget.Material3.Button.TextButton"
+        style="@style/UniLib.Button.OutlinedLight"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="44dp"
         android:layout_marginStart="@dimen/spacing_s"
-        android:text="@string/btn_logout"
-        android:textColor="@android:color/white" />
+        android:minWidth="0dp"
+        android:text="@string/btn_logout" />
 </LinearLayout>

@@ -13,6 +13,8 @@ public final class RoleRouter {
     private RoleRouter() { }
     public static final String EXTRA_NAME = "extra_name";
     public static final String EXTRA_ROLE = "extra_role";
+    public static final String EXTRA_PROGRAM_ID = "extra_program_id";
+    public static final String EXTRA_PROGRAM_NAME = "extra_program_name";
 
     public static void openHomeFor(Activity from, User user) {
         Role role = user.parsedRole();
@@ -36,6 +38,8 @@ public final class RoleRouter {
         Intent i = new Intent(from, target);
         i.putExtra(EXTRA_NAME, user.getName());
         i.putExtra(EXTRA_ROLE, role.name());
+        i.putExtra(EXTRA_PROGRAM_ID, user.getProgramId());
+        i.putExtra(EXTRA_PROGRAM_NAME, user.getProgramName());
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         from.startActivity(i);
         from.finish();
