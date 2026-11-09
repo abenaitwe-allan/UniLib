@@ -71,6 +71,9 @@
         <activity
             android:name=".ui.common.PdfViewerActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.common.ProfileActivity"
+            android:exported="false" />
 
         <service
             android:name=".util.FcmMessagingService"

@@ -12,10 +12,14 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.example.unilib.R;
 import com.example.unilib.model.Document;
-import com.example.unilib.ui.student.StudentHomeActivity;
+import com.example.unilib.ui.auth.LoginActivity;
+import com.example.unilib.ui.common.PdfViewerActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Posts system notifications when a new document is approved for the student's programme.
+ * If user session is active, tapping takes user straight to PdfViewerActivity.
+ * If user session is expired, tapping takes user to LoginActivity.
  */
 public class NotificationHelper {
 
@@ -43,8 +47,25 @@ public class NotificationHelper {
 
         createNotificationChannel(context);
 
-        Intent intent = new Intent(context, StudentHomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Intent intent;
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            // Active session: open document straight in PdfViewerActivity
+            intent = new Intent(context, PdfViewerActivity.class);
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_ID, document.getId());
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_TITLE, document.getTitle());
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_URL, document.getFileUrl());
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_PROGRAM, document.getProgramName());
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_COURSE, document.getCourseCode());
+        } else {
+            // Expired/signed out: open LoginActivity
+            intent = new Intent(context, LoginActivity.class);
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_ID, document.getId());
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_TITLE, document.getTitle());
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_URL, document.getFileUrl());
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_PROGRAM, document.getProgramName());
+            intent.putExtra(PdfViewerActivity.EXTRA_DOC_COURSE, document.getCourseCode());
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,

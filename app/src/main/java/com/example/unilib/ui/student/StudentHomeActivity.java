@@ -33,6 +33,7 @@ import com.example.unilib.network.NetworkUtils;
 import com.example.unilib.ui.RoleRouter;
 import com.example.unilib.ui.auth.LoginActivity;
 import com.example.unilib.ui.common.DocumentActions;
+import com.example.unilib.ui.common.ProfileActivity;
 import com.example.unilib.util.DocCheckWorker;
 import com.example.unilib.util.NotificationHelper;
 import com.google.android.material.chip.Chip;
@@ -87,6 +88,11 @@ public class StudentHomeActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.tvWelcome))
                 .setText(getString(R.string.welcome_user, name == null ? "" : name));
         findViewById(R.id.btnLogout).setOnClickListener(v -> askToLogout());
+
+        View btnProfile = findViewById(R.id.btnProfile);
+        if (btnProfile != null) {
+            btnProfile.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
+        }
 
         etSearch = findViewById(R.id.etSearch);
         tvEmpty = findViewById(R.id.tvEmpty);
@@ -152,6 +158,10 @@ public class StudentHomeActivity extends AppCompatActivity {
             @Override public void onSuccess(User profile) {
                 programId = profile.getProgramId();
                 programName = profile.getProgramName();
+                TextView tvWelcome = findViewById(R.id.tvWelcome);
+                if (tvWelcome != null && profile.getName() != null) {
+                    tvWelcome.setText(getString(R.string.welcome_user, profile.getName()));
+                }
                 updateProgramLabel();
                 applyFilter();
             }

@@ -106,19 +106,6 @@
             android:layout_width="match_parent"
             android:layout_height="48dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_m"
-            android:text="@string/label_course"
-            android:textColor="@color/unilib_text_secondary"
-            android:textSize="@dimen/text_secondary" />
-
-        <Spinner
-            android:id="@+id/spCourse"
-            android:layout_width="match_parent"
-            android:layout_height="48dp" />
-
         <Button
             android:id="@+id/btnCreate"
             android:layout_width="match_parent"

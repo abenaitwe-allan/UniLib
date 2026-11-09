@@ -20,7 +20,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -90,6 +92,43 @@ public class UserRepository {
         db.collection("users").document(uid)
                 .update("active", active)
                 .addOnSuccessListener(v -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(friendly(e)));
+    }
+
+    /** Deletes a member profile document from Firestore. */
+    public void deleteUser(String uid, ResultCallback<Void> callback) {
+        if (uid == null || uid.isEmpty()) {
+            callback.onError(ctx.getString(R.string.err_generic));
+            return;
+        }
+        db.collection("users").document(uid).delete()
+                .addOnSuccessListener(v -> callback.onSuccess(null))
+                .addOnFailureListener(e -> callback.onError(friendly(e)));
+    }
+
+    /** Updates a member's profile details. */
+    public void updateProfile(String uid, String name, String email, List<String> teachingPrograms, ResultCallback<Void> callback) {
+        if (uid == null || uid.isEmpty()) {
+            callback.onError(ctx.getString(R.string.err_generic));
+            return;
+        }
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", name);
+        updates.put("email", email);
+        if (teachingPrograms != null) {
+            updates.put("teachingPrograms", teachingPrograms);
+        }
+
+        db.collection("users").document(uid).update(updates)
+                .addOnSuccessListener(v -> {
+                    FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
+                    if (current != null && email != null && !email.trim().isEmpty() && !email.equalsIgnoreCase(current.getEmail())) {
+                        try {
+                            current.updateEmail(email);
+                        } catch (Exception ignored) { }
+                    }
+                    callback.onSuccess(null);
+                })
                 .addOnFailureListener(e -> callback.onError(friendly(e)));
     }
 

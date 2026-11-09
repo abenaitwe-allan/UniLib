@@ -10,15 +10,23 @@ service cloud.firestore {
     function isReviewer() { return role() in ['LECTURER', 'ADMIN']; }
 
     match /users/{uid} {
-      // read your own profile, or any profile if admin
-      allow read: if signedIn() && (request.auth.uid == uid || role() == 'ADMIN');
+      // read your own profile, or any profile if signed in
+      allow read: if signedIn();
+
       // you may create only your own profile, and only as an active STUDENT
       allow create: if signedIn() && request.auth.uid == uid
                     && request.resource.data.role == 'STUDENT'
                     && request.resource.data.active == true;
-      // only admins change roles or active status
-      allow update: if signedIn() && role() == 'ADMIN';
-      allow delete: if false;
+
+      // admins can update any profile; members can update their own profile (name, email, teaching programs)
+      allow update: if signedIn() && (
+                      role() == 'ADMIN'
+                      || (request.auth.uid == uid
+                          && request.resource.data.role == resource.data.role
+                          && request.resource.data.active == resource.data.active)
+                    );
+
+      allow delete: if signedIn() && role() == 'ADMIN';
     }
 
     match /documents/{docId} {

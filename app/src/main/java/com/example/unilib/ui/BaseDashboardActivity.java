@@ -22,6 +22,7 @@ import com.example.unilib.model.Role;
 import com.example.unilib.model.User;
 import com.example.unilib.ui.auth.LoginActivity;
 import com.example.unilib.ui.common.Labels;
+import com.example.unilib.ui.common.ProfileActivity;
 import com.example.unilib.ui.upload.UploadActivity;
 import com.example.unilib.util.NotificationHelper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -67,11 +68,9 @@ public abstract class BaseDashboardActivity extends AppCompatActivity {
         TextView title = findViewById(R.id.tvDashTitle);
         if (title != null) title.setText(titleResource());
 
-        TextView who = findViewById(R.id.tvDashUser);
-        if (who != null) {
-            String name = getIntent().getStringExtra(RoleRouter.EXTRA_NAME);
-            who.setText(getString(R.string.dash_signed_in, roleLabel(),
-                    (name == null || name.isEmpty()) ? "" : name));
+        View btnProfile = findViewById(R.id.btnProfile);
+        if (btnProfile != null) {
+            btnProfile.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
         }
 
         Button logout = findViewById(R.id.btnLogout);

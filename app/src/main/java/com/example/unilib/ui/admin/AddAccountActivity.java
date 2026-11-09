@@ -14,12 +14,10 @@ import com.example.unilib.R;
 import com.example.unilib.data.CatalogLoader;
 import com.example.unilib.data.ResultCallback;
 import com.example.unilib.data.UserRepository;
-import com.example.unilib.model.CourseUnit;
 import com.example.unilib.model.Program;
 import com.example.unilib.model.Role;
 import com.example.unilib.model.User;
 import com.example.unilib.ui.common.Labels;
-import com.example.unilib.ui.common.ProgramCoursePicker;
 import com.example.unilib.ui.common.SpinnerBinder;
 import com.example.unilib.util.Validators;
 import com.google.android.material.snackbar.Snackbar;
@@ -30,18 +28,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The screen where an admin makes an account for a lecturer or a class
- * president. The new member can then log in with the password the admin gave
- * them.
+ * The screen where an admin makes an account for a lecturer or a class president.
  */
 public class AddAccountActivity extends AppCompatActivity {
 
     private UserRepository users;
-    private ProgramCoursePicker picker;
+    private final List<Program> programs = new ArrayList<>();
 
     private TextInputLayout tilName, tilEmail, tilPassword;
     private TextInputEditText etName, etEmail, etPassword;
-    private Spinner spRole;
+    private Spinner spRole, spProgram;
     private Button btnCreate;
     private ProgressBar progress;
 
@@ -53,7 +49,6 @@ public class AddAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_account);
 
-        // Built here, not as a field: the context is not ready until now.
         users = new UserRepository(this);
 
         tilName = findViewById(R.id.tilName);
@@ -63,6 +58,7 @@ public class AddAccountActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         spRole = findViewById(R.id.spRole);
+        spProgram = findViewById(R.id.spProgram);
         btnCreate = findViewById(R.id.btnCreate);
         progress = findViewById(R.id.progress);
 
@@ -74,11 +70,32 @@ public class AddAccountActivity extends AppCompatActivity {
         }
         SpinnerBinder.bind(spRole, roleLabels);
 
-        picker = new ProgramCoursePicker(findViewById(R.id.spProgram),
-                findViewById(R.id.spCourse), new CatalogLoader(this), false);
-        picker.load();
+        loadPrograms();
 
         btnCreate.setOnClickListener(v -> createAccount());
+    }
+
+    private void loadPrograms() {
+        new CatalogLoader(this).loadPrograms(new ResultCallback<List<Program>>() {
+            @Override public void onSuccess(List<Program> result) {
+                programs.clear();
+                programs.addAll(result);
+                List<String> names = new ArrayList<>();
+                names.add(getString(R.string.select_program));
+                for (Program p : programs) names.add(p.getName());
+                SpinnerBinder.bind(spProgram, names);
+            }
+
+            @Override public void onError(String message) {
+                showMessage(message);
+            }
+        });
+    }
+
+    private Program selectedProgram() {
+        int pos = spProgram.getSelectedItemPosition();
+        if (pos <= 0 || pos - 1 >= programs.size()) return null;
+        return programs.get(pos - 1);
     }
 
     private void createAccount() {
@@ -114,20 +131,16 @@ public class AddAccountActivity extends AppCompatActivity {
             showMessage(getString(R.string.error_role_required));
             valid = false;
         }
-        Program program = picker.selectedProgram();
-        CourseUnit courseUnit = picker.selectedCourseUnit();
+        Program program = selectedProgram();
         if (program == null) {
             showMessage(getString(R.string.error_program_required));
-            valid = false;
-        } else if (courseUnit == null) {
-            showMessage(getString(R.string.err_no_course_units));
             valid = false;
         }
         if (!valid) return;
 
         setBusy(true);
         users.createAccount(name, email, password, roles.get(rolePosition),
-                program.getId(), program.getName(), courseUnit.getCode(), courseUnit.getTitle(),
+                program.getId(), program.getName(), "", "",
                 new ResultCallback<User>() {
                     @Override public void onSuccess(User created) {
                         setBusy(false);

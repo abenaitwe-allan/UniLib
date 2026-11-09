@@ -21,11 +21,32 @@
         android:minWidth="0dp"
         android:text="@string/btn_upload" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/spacing_m"
+        android:paddingTop="@dimen/spacing_s">
+
+        <Spinner
+            android:id="@+id/spProgramFilter"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1" />
+
+        <Spinner
+            android:id="@+id/spCourseFilter"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tvSection"
         style="@style/UniLib.SectionHeader"
         android:layout_marginHorizontal="@dimen/spacing_m"
-        android:layout_marginTop="@dimen/spacing_m"
+        android:layout_marginTop="@dimen/spacing_s"
         android:text="@string/reviewer_pending" />
 
     <FrameLayout

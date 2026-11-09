@@ -1,5 +1,8 @@
 package com.example.unilib.model;
 import com.google.firebase.firestore.DocumentId;
+
+import java.util.List;
+
 public class User {
     @DocumentId
     private String id;          // filled by Firestore from the document id (the Auth uid)
@@ -22,6 +25,8 @@ public class User {
     /** The name of that course unit, for example "Programming Fundamentals". */
     private String courseTitle;
     private boolean active;
+    /** For lecturers: programmes they teach (e.g. ["Computer Science", "Information Technology"]). */
+    private List<String> teachingPrograms;
 
     public User() { }           // required by Firestore
 
@@ -44,6 +49,8 @@ public class User {
     public void setCourseTitle(String courseTitle) { this.courseTitle = courseTitle; }
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+    public List<String> getTeachingPrograms() { return teachingPrograms; }
+    public void setTeachingPrograms(List<String> teachingPrograms) { this.teachingPrograms = teachingPrograms; }
 
     /**
      * The role as an enum, or null when Firestore holds something we do not know.

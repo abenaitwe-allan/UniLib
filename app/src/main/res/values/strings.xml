@@ -153,6 +153,10 @@
     <string name="admin_role_updated">%1$s is now %2$s</string>
     <string name="admin_member_updated">Updated %1$s</string>
     <string name="admin_cannot_change_own_role">You cannot change your own account here.</string>
+    <string name="admin_delete_account">Delete Account</string>
+    <string name="admin_confirm_delete_account_title">Delete Account?</string>
+    <string name="admin_confirm_delete_account_msg">Are you sure you want to delete the account for \"%1$s\"? This cannot be undone.</string>
+    <string name="admin_account_deleted">Deleted account: %1$s</string>
     <string name="admin_view_docs">View Documents</string>
     <string name="admin_select_program">Select Program to view documents</string>
     <string name="admin_delete_doc">Delete</string>

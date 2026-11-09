@@ -294,7 +294,7 @@ public class AdminDashboardActivity extends BaseDashboardActivity {
         userAdapter.submit(filtered);
     }
 
-    /** Lets the admin pick a new role for a member, or switch the account off. */
+    /** Lets the admin pick a new role for a member, switch the account off, or delete the account. */
     private void showMemberDialog(User user) {
         List<String> options = new ArrayList<>();
         List<Role> roles = new ArrayList<>();
@@ -303,17 +303,46 @@ public class AdminDashboardActivity extends BaseDashboardActivity {
             roles.add(role);
         }
         options.add(user.isActive() ? getString(R.string.admin_deactivate) : getString(R.string.admin_activate));
+        options.add(getString(R.string.admin_delete_account));
 
         new MaterialAlertDialogBuilder(this)
                 .setTitle(nameOf(user))
                 .setItems(options.toArray(new String[0]), (d, which) -> {
                     if (which < roles.size()) {
                         changeRole(user, roles.get(which));
-                    } else {
+                    } else if (which == roles.size()) {
                         changeActive(user, !user.isActive());
+                    } else {
+                        askToDeleteMember(user);
                     }
                 })
                 .setNegativeButton(R.string.btn_cancel, null)
+                .show();
+    }
+
+    private void askToDeleteMember(User user) {
+        if (isMe(user)) {
+            showMessage(getString(R.string.admin_cannot_change_own_role));
+            return;
+        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.admin_confirm_delete_account_title)
+                .setMessage(getString(R.string.admin_confirm_delete_account_msg, nameOf(user)))
+                .setNegativeButton(R.string.btn_cancel, null)
+                .setPositiveButton(R.string.admin_delete_doc, (dialog, which) -> {
+                    userRepo.deleteUser(user.getId(), new ResultCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void result) {
+                            showMessage(getString(R.string.admin_account_deleted, nameOf(user)));
+                            loadUsers();
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            showMessage(message);
+                        }
+                    });
+                })
                 .show();
     }
 
